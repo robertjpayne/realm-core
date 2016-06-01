@@ -794,31 +794,31 @@ EOF
             if [ "$target" = "arm" -o "$target" = "arm-v7a" ]; then
                 arch="arm"
                 android_prefix="arm"
-                android_toolchain="arm-linux-androideabi-4.9"
+                android_toolchain="arm-linux-androideabi-clang"
             elif [ "$target" = "arm64" ]; then
                 arch="arm64"
                 android_prefix="aarch64"
-                android_toolchain="aarch64-linux-android-4.9"
+                android_toolchain="aarch64-linux-android-clang"
             elif [ "$target" = "mips" ]; then
                 arch="mips"
                 android_prefix="mipsel"
-                android_toolchain="mipsel-linux-android-4.9"
+                android_toolchain="mipsel-linux-android-clang"
             elif [ "$target" = "x86" ]; then
                 arch="x86"
                 android_prefix="i686"
-                android_toolchain="x86-4.9"
+                android_toolchain="x86-clang"
             elif [ "$target" = "x86_64" ]; then
                 arch="x86_64"
                 android_prefix="x86_64"
-                android_toolchain="x86_64-4.9"
+                android_toolchain="x86_64-clang"
             fi
             # Note that `make-standalone-toolchain.sh` is written for
             # `bash` and must therefore be executed by `bash`.
             make_toolchain="$android_ndk_home/build/tools/make-standalone-toolchain.sh"
-            bash "$make_toolchain" --platform="android-$platform" --toolchain="$android_toolchain" --install-dir="$temp_dir" --arch="$arch" || exit 1
+            bash "$make_toolchain" --platform="android-$platform" --toolchain="$android_toolchain" --use-llvm --install-dir="$temp_dir" --arch="$arch" || exit 1
 
             path="$temp_dir/bin:$PATH"
-            cc="$(cd "$temp_dir/bin" && echo $android_prefix-linux-*-gcc)" || exit 1
+            cc="clang" 
             cflags_arch=""
             if [ "$target" = "arm" ]; then
                 word_list_append "cflags_arch" "-mthumb" || exit 1
@@ -833,7 +833,9 @@ EOF
             if ! [ -f "$ANDROID_DIR/$libcrypto_name" ] && [ "$enable_encryption" = "yes" ]; then
                 (
                     cd openssl
-                    export MACHINE=$target
+                    rm -f Makefile || exit 1
+                    LC_CTYPE=C sed -i '' -e 's/\-mandroid//g' Configure
+                    export MACHINE=$arch
                     export RELEASE=unknown
                     export SYSTEM=android
                     export ARCH=arm
@@ -849,13 +851,14 @@ EOF
                     $MAKE clean
                 ) || exit 1
 
-                $MAKE -C "openssl" depend || exit 1
+                # FIXME: the folders in -I below might have to be adjusted
+                $MAKE -C "openssl" DEPFLAG="-I$temp_dir/sysroot/usr/include/ -I$temp_dir/lib64/clang/3.8/include" depend || exit 1
                 PATH="$path" CC="$cc" CFLAGS="$cflags_arch" PERL="perl" $MAKE -C "openssl" build_crypto || exit 1
                 cp "openssl/libcrypto.a" "$ANDROID_DIR/$libcrypto_name" || exit 1
             fi
 
             # Build realm
-            PATH="$path" CC="$cc" $MAKE -C "src/realm" CC_IS="gcc" BASE_DENOM="$denom" CFLAGS_ARCH="$cflags_arch" "librealm-$denom.a" "librealm-$denom-dbg.a" || exit 1
+            PATH="$path" CC="$cc" $MAKE -C "src/realm" CC_IS="clang" BASE_DENOM="$denom" CFLAGS_ARCH="$cflags_arch" "librealm-$denom.a" "librealm-$denom-dbg.a" || exit 1
 
             if [ "$enable_encryption" = "yes" ]; then
                 # Merge OpenSSL and Realm into one static library
