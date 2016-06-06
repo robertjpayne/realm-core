@@ -783,9 +783,7 @@ EOF
         mkdir -p "$ANDROID_DIR" || exit 1
         for target in $ANDROID_PLATFORMS; do
             temp_dir="$(mktemp -d /tmp/realm.build-android.XXXX)" || exit 1
-            if [ "$target" = "arm" ]; then
-                platform="8"
-            elif [ "$target" = "arm64" -o "$target" = "x86_64" ]; then
+            if [ "$target" = "arm64" -o "$target" = "x86_64" ]; then
                 platform="21"
             else
                 platform="9"
@@ -812,10 +810,8 @@ EOF
                 android_prefix="x86_64"
                 android_toolchain="x86_64-clang"
             fi
-            # Note that `make-standalone-toolchain.sh` is written for
-            # `bash` and must therefore be executed by `bash`.
-            make_toolchain="$android_ndk_home/build/tools/make-standalone-toolchain.sh"
-            bash "$make_toolchain" --platform="android-$platform" --toolchain="$android_toolchain" --use-llvm --install-dir="$temp_dir" --arch="$arch" || exit 1
+            make_toolchain="$android_ndk_home/build/tools/make_standalone_toolchain.py"
+            python "$make_toolchain" --api="$platform" --stl gnustl --install-dir="$temp_dir" --force --arch="$arch" || exit 1
 
             path="$temp_dir/bin:$PATH"
             cc="clang" 
