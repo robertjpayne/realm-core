@@ -441,6 +441,15 @@ protected:
     {
     }
 
+    class MatchCallback {
+    public:
+        MatchCallback(ColumnNodeBase* obj, bool (ColumnNodeBase::*fn)(int64_t))  : m_obj(obj), m_fn(fn){}
+        bool operator() (int64_t ndx) { return (m_obj->*m_fn)(ndx); }
+    private:
+        ColumnNodeBase* m_obj;
+        bool (ColumnNodeBase::*m_fn)(int64_t);
+    };
+
     template<Action TAction, class ColType>
     bool match_callback(int64_t v)
     {
@@ -498,9 +507,9 @@ public:
         using AggregateColumnType = typename GetColumnType<TDataType, Nullable>::type;
         bool cont;
         size_t start_in_leaf = s - this->m_leaf_start;
+        MatchCallback callback(this, &ThisType::template match_callback<TAction, AggregateColumnType>);
         cont = this->m_leaf_ptr->template find<TConditionFunction, act_CallbackIdx>
-                (m_value, start_in_leaf, end_in_leaf, this->m_leaf_start, nullptr,
-                 std::bind1st(std::mem_fun(&ThisType::template match_callback<TAction, AggregateColumnType>), this));
+                (m_value, start_in_leaf, end_in_leaf, this->m_leaf_start, nullptr, callback);
         return cont;
     }
 
