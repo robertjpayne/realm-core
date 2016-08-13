@@ -1,0 +1,23 @@
+def build(ctx):
+        ctx.objects(
+                source = ctx.path.ant_glob('test_*.cpp') + ['fuzz_group.cpp'],
+                includes = '../src',
+                target='test_objects')
+        ctx.objects(
+                source = ['util/mem.cpp'],
+                includes = '../src',
+                cppflags = '-DREALM_HAVE_LIBPROCPS',
+                target='mem')
+        ctx.stlib(
+                source = ctx.path.ant_glob('util/*.cpp'),
+                includes = '../src',
+                exclude_files = ['util/mem.cpp'],
+                use = 'mem',
+                target='test_util')
+        ctx.program(
+                source='main.cpp',
+                includes = '../src',
+                lib = 'pthread rt',
+                target='check',
+                use='test_objects test_util realm')
+

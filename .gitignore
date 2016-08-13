@@ -5,6 +5,8 @@
 cscope.*
 tags
 
+.waf*
+
 /cover_html
 /gcovr.xml
 /tmp

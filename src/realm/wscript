@@ -1,0 +1,32 @@
+from waflib.Task import Task
+
+def build(ctx):
+        ctx.stlib(
+                source = ctx.path.ant_glob('**/*.cpp'),
+                includes = '..',
+                exclude_files = [
+                            'importer.cpp',
+                            'importer_tool.cpp',
+                            'schema_dumper.cpp',
+                            'realmd.cpp'
+                            ],
+                target='realm')
+        ctx.program(
+                source = ['importer.cpp', 'importer_tool.cpp'],
+                includes = '..',
+                target='realm-import',
+                lib = 'pthread',
+                use='realm')
+        ctx.program(
+                source = ['schema_dumper.cpp'],
+                includes = '..',
+                target='realm-schema-dump',
+                lib = 'pthread',
+                use='realm')
+        ctx.program(
+                source = ['realmd.cpp'],
+                includes = '..',
+                target='realmd',
+                lib = 'pthread',
+                use='realm')
+
