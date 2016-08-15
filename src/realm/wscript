@@ -1,4 +1,26 @@
+import os
+from subprocess import check_output
 from waflib.Task import Task
+
+def configure(conf):
+        if conf.options.DEBUG:
+                max_bpnode_size = os.getenv('REALM_BP_NODE_SIZE_DEBUG', 1000)
+        else:
+                max_bpnode_size = os.getenv('REALM_BP_NODE_SIZE', 1000)
+        realm_version = os.getenv('REALM_VERSION', check_output(['git describe'], shell=True).rstrip())
+        conf.define('REALM_VERSION', realm_version);
+        conf.define('REALM_INSTALL_PREFIX', conf.env.PREFIX)
+        conf.define('REALM_INSTALL_EXEC_PREFIX', conf.env.PREFIX)
+        conf.define('REALM_INSTALL_INCLUDEDIR', conf.env.PREFIX+'/include')
+        conf.define('REALM_INSTALL_BINDIR', conf.env.BINDIR)
+        conf.define('REALM_INSTALL_LIBDIR', conf.env.LIBDIR)
+        conf.define('REALM_INSTALL_LIBEXECDIR', conf.env.PREFIX+'/libexec')
+        conf.define('REALM_MAX_BPNODE_SIZE', max_bpnode_size);
+        conf.define('REALM_ENABLE_ALLOC_SET_ZERO', 0)
+        conf.define('REALM_ENABLE_ENCRYPTION', 0)
+        conf.define('REALM_ENABLE_ASSERTIONS', 0)
+        conf.define('REALM_ENABLE_MEMDEBUG', 0)
+        conf.write_config_header('util/config.h')
 
 def build(ctx):
         ctx.stlib(
