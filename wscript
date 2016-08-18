@@ -21,8 +21,10 @@ def configure(conf):
                 conf.env.CXXFLAGS.append('-DNDEBUG')
         if conf.options.OPTIMIZE:
                 conf.env.CXXFLAGS.append('-O3')
+        if conf.env.CXX_NAME == 'clang':
+                conf.env.CXXFLAGS.extend(['-Wunreachable-code', '-Wshorten-64-to-32', '-Wold-style-cast', '-Wconditional-uninitialized', '-Wextra-semi'])
         if conf.env.DEST_OS == 'darwin':
-				conf.env.CXXFLAGS.extend(['-mmacosx-version-min=10.8', '-stdlib=libc++', '-Wno-nested-anon-types'])
+                conf.env.CXXFLAGS.extend(['-mmacosx-version-min=10.8', '-stdlib=libc++', '-Wno-nested-anon-types'])
         conf.recurse('src/realm')
         conf.recurse('test')
 
