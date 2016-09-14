@@ -389,18 +389,6 @@ LinkViewRef LinkListColumn::get_ptr(size_t row_ndx) const
     return create_view(*it);
 }
 
-void LinkListColumn::update_child_ref(size_t child_ndx, ref_type new_ref)
-{
-    LinkColumnBase::set(child_ndx, new_ref);
-}
-
-
-ref_type LinkListColumn::get_child_ref(size_t child_ndx) const noexcept
-{
-    return LinkColumnBase::get_as_ref(child_ndx);
-}
-
-
 void LinkListColumn::to_json_row(size_t row_ndx, std::ostream& out) const
 {
     LinkViewRef links1 = const_cast<LinkListColumn*>(this)->get(row_ndx);
@@ -783,13 +771,6 @@ void LinkListColumn::verify(const Table& table, size_t col_ndx) const
     static_cast<void>(table);
     static_cast<void>(col_ndx);
 #endif
-}
-
-
-std::pair<ref_type, size_t> LinkListColumn::get_to_dot_parent(size_t ndx_in_parent) const
-{
-    std::pair<MemRef, size_t> p = get_root_array()->get_bptree_leaf(ndx_in_parent);
-    return std::make_pair(p.first.get_ref(), p.second);
 }
 
 // LCOV_EXCL_STOP ignore debug functions
