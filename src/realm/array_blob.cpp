@@ -19,36 +19,120 @@
 #include <algorithm>
 
 #include <realm/array_blob.hpp>
+#include <realm/array.hpp>
+
+namespace realm {
+
+class BigBlob : public Array {
+public:
+    explicit BigBlob(const ArrayBlob& b)
+        : Array(b.get_alloc())
+    {
+        init_from_ref(b.get_ref());
+    }
+
+    explicit BigBlob(Allocator& alloc)
+        : Array(alloc)
+    {
+        // Create new array with context flag set
+        create(type_HasRefs, true); // Throws
+    }
+
+    size_t blob_size()
+    {
+        size_t total_size = 0;
+        for (size_t i = 0; i < size(); ++i) {
+            char* header = m_alloc.translate(Array::get_as_ref(i));
+            total_size += Array::get_size_from_header(header);
+        }
+        return total_size;
+    }
+
+#ifdef REALM_DEBUG
+    void verify()
+    {
+        REALM_ASSERT(has_refs());
+        for (size_t i = 0; i < size(); ++i) {
+            ref_type blob_ref = Array::get_as_ref(i);
+            REALM_ASSERT(blob_ref != 0);
+            ArrayBlob blob(m_alloc);
+            blob.init_from_ref(blob_ref);
+            blob.verify();
+        }
+    }
+#endif
+
+    BinaryData get_at(size_t& pos) const noexcept;
+    ref_type replace(const char* data, size_t data_size);
+};
+}
 
 using namespace realm;
+
+BinaryData BigBlob::get_at(size_t& pos) const noexcept
+{
+    size_t offset = pos;
+    size_t ndx = 0;
+    size_t current_size = DbElement::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
+
+    // Find the blob to start from
+    while (offset >= current_size) {
+        ndx++;
+        if (ndx >= size()) {
+            pos = 0;
+            return {};
+        }
+        offset -= current_size;
+        current_size = DbElement::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
+    }
+
+    ArrayBlob blob(m_alloc);
+    blob.init_from_ref(Array::get_as_ref(ndx));
+    ndx++;
+    size_t sz = current_size - offset;
+
+    // Check if we are at last blob
+    pos = (ndx >= size()) ? 0 : pos + sz;
+
+    return {blob.get(offset), sz};
+}
+
+ref_type BigBlob::replace(const char* data, size_t data_size)
+{
+    // We might have room for more data in the last node
+    ArrayBlob lastNode(m_alloc);
+    lastNode.init_from_ref(get_as_ref(size() - 1));
+    lastNode.set_parent(this, size() - 1);
+
+    size_t space_left = ArrayBlob::max_binary_size - lastNode.size();
+    size_t size_to_copy = std::min(space_left, data_size);
+    lastNode.add(data, size_to_copy);
+    data_size -= space_left;
+    data += space_left;
+
+    while (data_size) {
+        // Create new nodes as required
+        size_to_copy = std::min(size_t(ArrayBlob::max_binary_size), data_size);
+        ArrayBlob new_blob(m_alloc);
+        new_blob.create(); // Throws
+
+        // Copy data
+        ref_type ref = new_blob.add(data, size_to_copy);
+        // Add new node in hosting node
+        Array::add(ref);
+
+        data_size -= size_to_copy;
+        data += size_to_copy;
+    }
+    return get_ref();
+}
 
 BinaryData ArrayBlob::get_at(size_t& pos) const noexcept
 {
     size_t offset = pos;
     if (get_context_flag()) {
-        size_t ndx = 0;
-        size_t current_size = Array::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
-
-        // Find the blob to start from
-        while (offset >= current_size) {
-            ndx++;
-            if (ndx >= size()) {
-                pos = 0;
-                return {};
-            }
-            offset -= current_size;
-            current_size = Array::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
-        }
-
-        ArrayBlob blob(m_alloc);
-        blob.init_from_ref(Array::get_as_ref(ndx));
-        ndx++;
-        size_t sz = current_size - offset;
-
-        // Check if we are at last blob
-        pos = (ndx >= size()) ? 0 : pos + sz;
-
-        return {blob.get(offset), sz};
+        BigBlob big(*this);
+        return big.get_at(pos);
     }
     else {
         // All data is in this array
@@ -73,31 +157,8 @@ ref_type ArrayBlob::replace(size_t begin, size_t end, const char* data, size_t d
     if (get_context_flag()) {
         REALM_ASSERT(begin == 0 && end == 0); // For the time being, only support append
 
-        // We might have room for more data in the last node
-        ArrayBlob lastNode(m_alloc);
-        lastNode.init_from_ref(get_as_ref(size() - 1));
-        lastNode.set_parent(this, size() - 1);
-
-        size_t space_left = max_binary_size - lastNode.size();
-        size_t size_to_copy = std::min(space_left, data_size);
-        lastNode.add(data, size_to_copy);
-        data_size -= space_left;
-        data += space_left;
-
-        while (data_size) {
-            // Create new nodes as required
-            size_to_copy = std::min(size_t(max_binary_size), data_size);
-            ArrayBlob new_blob(m_alloc);
-            new_blob.create(); // Throws
-
-            // Copy data
-            ref_type ref = new_blob.add(data, size_to_copy);
-            // Add new node in hosting node
-            Array::add(ref);
-
-            data_size -= size_to_copy;
-            data += size_to_copy;
-        }
+        BigBlob big(*this);
+        return big.replace(data, data_size);
     }
     else {
         size_t remove_size = end - begin;
@@ -109,13 +170,11 @@ ref_type ArrayBlob::replace(size_t begin, size_t end, const char* data, size_t d
         // references to child blobs holding the actual data. Context flag will indicate
         // if blob is split.
         if (new_size > max_binary_size) {
-            Array new_root(m_alloc);
-            // Create new array with context flag set
-            new_root.create(type_HasRefs, true); // Throws
+            BigBlob new_root(m_alloc);
 
             // Add current node to the new root
             new_root.add(get_ref());
-            return reinterpret_cast<ArrayBlob*>(&new_root)->replace(begin, end, data, data_size, add_zero_term);
+            return new_root.replace(data, data_size);
         }
 
         copy_on_write(); // Throws
@@ -155,12 +214,8 @@ ref_type ArrayBlob::replace(size_t begin, size_t end, const char* data, size_t d
 size_t ArrayBlob::blob_size() const noexcept
 {
     if (get_context_flag()) {
-        size_t total_size = 0;
-        for (size_t i = 0; i < size(); ++i) {
-            char* header = m_alloc.translate(Array::get_as_ref(i));
-            total_size += Array::get_size_from_header(header);
-        }
-        return total_size;
+        BigBlob bb(*this);
+        return bb.blob_size();
     }
     else {
         return size();
@@ -170,14 +225,8 @@ size_t ArrayBlob::blob_size() const noexcept
 void ArrayBlob::verify() const
 {
     if (get_context_flag()) {
-        REALM_ASSERT(has_refs());
-        for (size_t i = 0; i < size(); ++i) {
-            ref_type blob_ref = Array::get_as_ref(i);
-            REALM_ASSERT(blob_ref != 0);
-            ArrayBlob blob(m_alloc);
-            blob.init_from_ref(blob_ref);
-            blob.verify();
-        }
+        BigBlob bb(*this);
+        bb.verify();
     }
     else {
         REALM_ASSERT(!has_refs());

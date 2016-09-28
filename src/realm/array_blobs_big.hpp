@@ -20,6 +20,7 @@
 #define REALM_ARRAY_BIG_BLOBS_HPP
 
 #include <realm/array_blob.hpp>
+#include <realm/array.hpp>
 
 namespace realm {
 

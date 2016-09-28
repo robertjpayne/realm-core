@@ -19,16 +19,23 @@
 #ifndef REALM_ARRAY_BLOB_HPP
 #define REALM_ARRAY_BLOB_HPP
 
-#include <realm/array.hpp>
+#include <realm/db_element.hpp>
+#include <realm/string_data.hpp>
+#include <realm/binary_data.hpp>
 
 namespace realm {
 
 
-class ArrayBlob : public Array {
+class ArrayBlob : public DbElement {
 public:
-    static constexpr size_t max_binary_size = 0xFFFFF8 - Array::header_size;
+    static constexpr size_t max_binary_size = 0xFFFFF8 - DbElement::header_size;
 
-    explicit ArrayBlob(Allocator&) noexcept;
+    // Creates new array (but invalid, call init_from_ref() to init)
+    explicit ArrayBlob(Allocator& allocator) noexcept
+        : DbElement(allocator)
+    {
+    }
+
     ~ArrayBlob() noexcept override
     {
     }
@@ -60,6 +67,11 @@ public:
     /// initialized to zero.
     static MemRef create_array(size_t init_size, Allocator&);
 
+    void clear()
+    {
+        truncate(0);
+    }
+
 #ifdef REALM_DEBUG
     size_t blob_size() const noexcept;
     void verify() const;
@@ -73,12 +85,6 @@ private:
 
 
 // Implementation:
-
-// Creates new array (but invalid, call init_from_ref() to init)
-inline ArrayBlob::ArrayBlob(Allocator& allocator) noexcept
-    : Array(allocator)
-{
-}
 
 inline bool ArrayBlob::is_null(size_t index) const noexcept
 {
@@ -122,9 +128,7 @@ inline void ArrayBlob::create()
 
 inline MemRef ArrayBlob::create_array(size_t init_size, Allocator& allocator)
 {
-    bool context_flag = false;
-    int_fast64_t value = 0;
-    return Array::create(type_Normal, context_flag, wtype_Ignore, init_size, value, allocator); // Throws
+    return DbElement::create_element(init_size, allocator);
 }
 
 inline size_t ArrayBlob::calc_byte_len(size_t for_size, size_t) const
