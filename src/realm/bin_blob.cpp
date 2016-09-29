@@ -18,14 +18,14 @@
 
 #include <algorithm>
 
-#include <realm/array_blob.hpp>
 #include <realm/array.hpp>
+#include <realm/bin_blob.hpp>
 
 namespace realm {
 
 class BigBlob : public Array {
 public:
-    explicit BigBlob(const ArrayBlob& b)
+    explicit BigBlob(const BinBlob& b)
         : Array(b.get_alloc())
     {
         init_from_ref(b.get_ref());
@@ -55,7 +55,7 @@ public:
         for (size_t i = 0; i < size(); ++i) {
             ref_type blob_ref = Array::get_as_ref(i);
             REALM_ASSERT(blob_ref != 0);
-            ArrayBlob blob(m_alloc);
+            BinBlob blob(m_alloc);
             blob.init_from_ref(blob_ref);
             blob.verify();
         }
@@ -73,7 +73,7 @@ BinaryData BigBlob::get_at(size_t& pos) const noexcept
 {
     size_t offset = pos;
     size_t ndx = 0;
-    size_t current_size = DbElement::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
+    size_t current_size = DatabaseElement::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
 
     // Find the blob to start from
     while (offset >= current_size) {
@@ -83,10 +83,10 @@ BinaryData BigBlob::get_at(size_t& pos) const noexcept
             return {};
         }
         offset -= current_size;
-        current_size = DbElement::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
+        current_size = DatabaseElement::get_size_from_header(m_alloc.translate(Array::get_as_ref(ndx)));
     }
 
-    ArrayBlob blob(m_alloc);
+    BinBlob blob(m_alloc);
     blob.init_from_ref(Array::get_as_ref(ndx));
     ndx++;
     size_t sz = current_size - offset;
@@ -100,11 +100,11 @@ BinaryData BigBlob::get_at(size_t& pos) const noexcept
 ref_type BigBlob::replace(const char* data, size_t data_size)
 {
     // We might have room for more data in the last node
-    ArrayBlob lastNode(m_alloc);
+    BinBlob lastNode(m_alloc);
     lastNode.init_from_ref(get_as_ref(size() - 1));
     lastNode.set_parent(this, size() - 1);
 
-    size_t space_left = ArrayBlob::max_binary_size - lastNode.size();
+    size_t space_left = BinBlob::max_binary_size - lastNode.size();
     size_t size_to_copy = std::min(space_left, data_size);
     lastNode.add(data, size_to_copy);
     data_size -= space_left;
@@ -112,8 +112,8 @@ ref_type BigBlob::replace(const char* data, size_t data_size)
 
     while (data_size) {
         // Create new nodes as required
-        size_to_copy = std::min(size_t(ArrayBlob::max_binary_size), data_size);
-        ArrayBlob new_blob(m_alloc);
+        size_to_copy = std::min(size_t(BinBlob::max_binary_size), data_size);
+        BinBlob new_blob(m_alloc);
         new_blob.create(); // Throws
 
         // Copy data
@@ -127,7 +127,7 @@ ref_type BigBlob::replace(const char* data, size_t data_size)
     return get_ref();
 }
 
-BinaryData ArrayBlob::get_at(size_t& pos) const noexcept
+BinaryData BinBlob::get_at(size_t& pos) const noexcept
 {
     size_t offset = pos;
     if (get_context_flag()) {
@@ -146,7 +146,7 @@ BinaryData ArrayBlob::get_at(size_t& pos) const noexcept
     }
 }
 
-ref_type ArrayBlob::replace(size_t begin, size_t end, const char* data, size_t data_size, bool add_zero_term)
+ref_type BinBlob::replace(size_t begin, size_t end, const char* data, size_t data_size, bool add_zero_term)
 {
     REALM_ASSERT_3(begin, <=, end);
     REALM_ASSERT_3(end, <=, m_size);
@@ -211,7 +211,7 @@ ref_type ArrayBlob::replace(size_t begin, size_t end, const char* data, size_t d
 
 #ifdef REALM_DEBUG // LCOV_EXCL_START ignore debug functions
 
-size_t ArrayBlob::blob_size() const noexcept
+size_t BinBlob::blob_size() const noexcept
 {
     if (get_context_flag()) {
         BigBlob bb(*this);
@@ -222,7 +222,7 @@ size_t ArrayBlob::blob_size() const noexcept
     }
 }
 
-void ArrayBlob::verify() const
+void BinBlob::verify() const
 {
     if (get_context_flag()) {
         BigBlob bb(*this);
@@ -233,7 +233,7 @@ void ArrayBlob::verify() const
     }
 }
 
-void ArrayBlob::to_dot(std::ostream& out, StringData title) const
+void BinBlob::to_dot(std::ostream& out, StringData title) const
 {
     ref_type ref = get_ref();
 

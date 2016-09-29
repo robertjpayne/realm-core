@@ -19,8 +19,8 @@
 #ifndef REALM_ARRAY_STRING_LONG_HPP
 #define REALM_ARRAY_STRING_LONG_HPP
 
-#include <realm/array_blob.hpp>
 #include <realm/array_integer.hpp>
+#include "bin_blob.hpp"
 
 namespace realm {
 
@@ -98,7 +98,7 @@ public:
 
 private:
     ArrayInteger m_offsets;
-    ArrayBlob m_blob;
+    BinBlob m_blob;
     Array m_nulls;
     bool m_nullable;
 };

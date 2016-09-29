@@ -21,7 +21,7 @@
 
 #include <cstring>
 
-#include <realm/array_blob.hpp>
+#include <realm/bin_blob.hpp>
 #include <realm/column_string.hpp>
 
 #include "test.hpp"
@@ -62,7 +62,7 @@ using namespace realm::test_util;
 
 TEST(ArrayBlob_AddEmpty)
 {
-    ArrayBlob blob(Allocator::get_default());
+    BinBlob blob(Allocator::get_default());
     blob.create();
 
     blob.add("", 0);
@@ -74,7 +74,7 @@ TEST(ArrayBlob_AddEmpty)
 
 TEST(ArrayBlob_General)
 {
-    ArrayBlob blob(Allocator::get_default());
+    BinBlob blob(Allocator::get_default());
     blob.create();
 
     const char* t1 = "aaa";

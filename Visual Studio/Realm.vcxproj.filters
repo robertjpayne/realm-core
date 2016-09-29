@@ -5,7 +5,7 @@
     <ClCompile Include="..\..\src\realm\alloc_slab.cpp" />
     <ClCompile Include="..\..\src\realm\array.cpp" />
     <ClCompile Include="..\..\src\realm\array_binary.cpp" />
-    <ClCompile Include="..\..\src\realm\array_blob.cpp" />
+    <ClCompile Include="..\..\src\realm\bin_blob.cpp" />
     <ClCompile Include="..\..\src\realm\array_blobs_big.cpp" />
     <ClCompile Include="..\..\src\realm\array_string.cpp" />
     <ClCompile Include="..\..\src\realm\array_string_long.cpp" />
@@ -63,7 +63,7 @@
     <ClCompile Include="..\..\test\test_all.cpp" />
     <ClCompile Include="..\..\test\test_alloc.cpp" />
     <ClCompile Include="..\..\test\test_array.cpp" />
-    <ClCompile Include="..\..\test\test_array_blob.cpp" />
+    <ClCompile Include="..\..\test\test_bin_blob.cpp" />
     <ClCompile Include="..\..\test\test_array_blobs_big.cpp" />
     <ClCompile Include="..\..\test\test_array_float.cpp" />
     <ClCompile Include="..\..\test\test_array_string.cpp" />
@@ -139,7 +139,7 @@
     <ClInclude Include="..\..\src\realm\alloc_slab.hpp" />
     <ClInclude Include="..\..\src\realm\array.hpp" />
     <ClInclude Include="..\..\src\realm\array_binary.hpp" />
-    <ClInclude Include="..\..\src\realm\array_blob.hpp" />
+    <ClInclude Include="..\..\src\realm\bin_blob.hpp" />
     <ClInclude Include="..\..\src\realm\array_basic.hpp" />
     <ClInclude Include="..\..\src\realm\array_basic_tpl.hpp" />
     <ClInclude Include="..\..\src\realm\array_blobs_big.hpp" />

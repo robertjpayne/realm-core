@@ -19,8 +19,8 @@
 #ifndef REALM_ARRAY_BIG_BLOBS_HPP
 #define REALM_ARRAY_BIG_BLOBS_HPP
 
-#include <realm/array_blob.hpp>
 #include <realm/array.hpp>
+#include "bin_blob.hpp"
 
 namespace realm {
 
@@ -104,7 +104,7 @@ inline BinaryData ArrayBigBlobs::get(size_t ndx) const noexcept
 
     const char* blob_header = get_alloc().translate(ref);
     if (!get_context_flag_from_header(blob_header)) {
-        const char* value = ArrayBlob::get(blob_header, 0);
+        const char* value = BinBlob::get(blob_header, 0);
         size_t blob_size = get_size_from_header(blob_header);
         return BinaryData(value, blob_size);
     }

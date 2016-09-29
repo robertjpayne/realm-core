@@ -16,27 +16,27 @@
  *
  **************************************************************************/
 
-#ifndef REALM_ARRAY_BLOB_HPP
-#define REALM_ARRAY_BLOB_HPP
+#ifndef REALM_BIN_BLOB_HPP
+#define REALM_BIN_BLOB_HPP
 
-#include <realm/db_element.hpp>
+#include <realm/database_element.hpp>
 #include <realm/string_data.hpp>
 #include <realm/binary_data.hpp>
 
 namespace realm {
 
 
-class ArrayBlob : public DbElement {
+class BinBlob : public DatabaseElement {
 public:
-    static constexpr size_t max_binary_size = 0xFFFFF8 - DbElement::header_size;
+    static constexpr size_t max_binary_size = 0xFFFFF8 - DatabaseElement::header_size;
 
     // Creates new array (but invalid, call init_from_ref() to init)
-    explicit ArrayBlob(Allocator& allocator) noexcept
-        : DbElement(allocator)
+    explicit BinBlob(Allocator& allocator) noexcept
+        : DatabaseElement(allocator)
     {
     }
 
-    ~ArrayBlob() noexcept override
+    ~BinBlob() noexcept override
     {
     }
 
@@ -86,57 +86,57 @@ private:
 
 // Implementation:
 
-inline bool ArrayBlob::is_null(size_t index) const noexcept
+inline bool BinBlob::is_null(size_t index) const noexcept
 {
     return (get(index) == nullptr);
 }
 
-inline const char* ArrayBlob::get(size_t index) const noexcept
+inline const char* BinBlob::get(size_t index) const noexcept
 {
     return m_data + index;
 }
 
-inline ref_type ArrayBlob::add(const char* data, size_t data_size, bool add_zero_term)
+inline ref_type BinBlob::add(const char* data, size_t data_size, bool add_zero_term)
 {
     return replace(m_size, m_size, data, data_size, add_zero_term);
 }
 
-inline void ArrayBlob::insert(size_t pos, const char* data, size_t data_size, bool add_zero_term)
+inline void BinBlob::insert(size_t pos, const char* data, size_t data_size, bool add_zero_term)
 {
     replace(pos, pos, data, data_size, add_zero_term);
 }
 
-inline void ArrayBlob::erase(size_t begin, size_t end)
+inline void BinBlob::erase(size_t begin, size_t end)
 {
     const char* data = nullptr;
     size_t data_size = 0;
     replace(begin, end, data, data_size);
 }
 
-inline const char* ArrayBlob::get(const char* header, size_t pos) noexcept
+inline const char* BinBlob::get(const char* header, size_t pos) noexcept
 {
     const char* data = get_data_from_header(header);
     return data + pos;
 }
 
-inline void ArrayBlob::create()
+inline void BinBlob::create()
 {
     size_t init_size = 0;
     MemRef mem = create_array(init_size, get_alloc()); // Throws
     init_from_mem(mem);
 }
 
-inline MemRef ArrayBlob::create_array(size_t init_size, Allocator& allocator)
+inline MemRef BinBlob::create_array(size_t init_size, Allocator& allocator)
 {
-    return DbElement::create_element(init_size, allocator);
+    return DatabaseElement::create_element(init_size, allocator);
 }
 
-inline size_t ArrayBlob::calc_byte_len(size_t for_size, size_t) const
+inline size_t BinBlob::calc_byte_len(size_t for_size, size_t) const
 {
     return header_size + for_size;
 }
 
-inline size_t ArrayBlob::calc_item_count(size_t bytes, size_t) const noexcept
+inline size_t BinBlob::calc_item_count(size_t bytes, size_t) const noexcept
 {
     return bytes - header_size;
 }

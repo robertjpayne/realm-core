@@ -97,7 +97,7 @@ nobase_subinclude_HEADERS += \
 array_basic.hpp \
 array_basic_tpl.hpp \
 array_binary.hpp \
-array_blob.hpp \
+bin_blob.hpp \
 array_blobs_big.hpp \
 array_string_long.hpp \
 column.hpp \
@@ -142,7 +142,7 @@ alloc.cpp \
 alloc_slab.cpp \
 array.cpp \
 array_binary.cpp \
-array_blob.cpp \
+bin_blob.cpp \
 array_blobs_big.cpp \
 array_integer.cpp \
 array_string.cpp \

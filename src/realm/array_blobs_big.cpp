@@ -30,7 +30,7 @@ BinaryData ArrayBigBlobs::get_at(size_t ndx, size_t& pos) const noexcept
     if (ref == 0)
         return {}; // realm::null();
 
-    ArrayBlob blob(m_alloc);
+    BinBlob blob(m_alloc);
     blob.init_from_ref(ref);
 
     return blob.get_at(pos);
@@ -45,7 +45,7 @@ void ArrayBigBlobs::add(BinaryData value, bool add_zero_term)
         Array::add(0); // Throws
     }
     else {
-        ArrayBlob new_blob(m_alloc);
+        BinBlob new_blob(m_alloc);
         new_blob.create();                                                      // Throws
         ref_type ref = new_blob.add(value.data(), value.size(), add_zero_term); // Throws
         Array::add(from_ref(ref));                                              // Throws
@@ -58,14 +58,14 @@ void ArrayBigBlobs::set(size_t ndx, BinaryData value, bool add_zero_term)
     REALM_ASSERT_3(ndx, <, size());
     REALM_ASSERT_7(value.size(), ==, 0, ||, value.data(), !=, 0);
 
-    ArrayBlob blob(m_alloc);
+    BinBlob blob(m_alloc);
     ref_type ref = get_as_ref(ndx);
 
     if (ref == 0 && value.is_null()) {
         return;
     }
     else if (ref == 0 && value.data() != nullptr) {
-        ArrayBlob new_blob(m_alloc);
+        BinBlob new_blob(m_alloc);
         new_blob.create();                                             // Throws
         ref = new_blob.add(value.data(), value.size(), add_zero_term); // Throws
         Array::set_as_ref(ndx, ref);
@@ -99,7 +99,7 @@ void ArrayBigBlobs::insert(size_t ndx, BinaryData value, bool add_zero_term)
         Array::insert(ndx, 0); // Throws
     }
     else {
-        ArrayBlob new_blob(m_alloc);
+        BinBlob new_blob(m_alloc);
         new_blob.create();                                                      // Throws
         ref_type ref = new_blob.add(value.data(), value.size(), add_zero_term); // Throws
 
@@ -150,7 +150,7 @@ size_t ArrayBigBlobs::find_first(BinaryData value, bool is_string, size_t begin,
                 const char* blob_header = get_alloc().translate(ref);
                 size_t blob_size = get_size_from_header(blob_header);
                 if (blob_size == full_size) {
-                    const char* blob_value = ArrayBlob::get(blob_header, 0);
+                    const char* blob_value = BinBlob::get(blob_header, 0);
                     if (std::equal(blob_value, blob_value + value_size, value.data()))
                         return i;
                 }
@@ -217,7 +217,7 @@ void ArrayBigBlobs::verify() const
         ref_type blob_ref = Array::get_as_ref(i);
         // 0 is used to indicate realm::null()
         if (blob_ref != 0) {
-            ArrayBlob blob(m_alloc);
+            BinBlob blob(m_alloc);
             blob.init_from_ref(blob_ref);
             blob.verify();
         }
@@ -239,7 +239,7 @@ void ArrayBigBlobs::to_dot(std::ostream& out, bool, StringData title) const
 
     for (size_t i = 0; i < size(); ++i) {
         ref_type blob_ref = Array::get_as_ref(i);
-        ArrayBlob blob(m_alloc);
+        BinBlob blob(m_alloc);
         blob.init_from_ref(blob_ref);
         blob.set_parent(const_cast<ArrayBigBlobs*>(this), i);
         blob.to_dot(out);

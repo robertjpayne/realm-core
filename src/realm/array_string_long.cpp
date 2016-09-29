@@ -17,7 +17,7 @@
  **************************************************************************/
 
 #include <realm/array_string_long.hpp>
-#include <realm/array_blob.hpp>
+#include <realm/bin_blob.hpp>
 #include <realm/impl/destroy_guard.hpp>
 #include <realm/column.hpp>
 
@@ -195,7 +195,7 @@ StringData ArrayStringLong::get(const char* header, size_t ndx, Allocator& alloc
     --end; // Discount the terminating zero
 
     const char* blob_header = alloc.translate(blob_ref);
-    const char* data = ArrayBlob::get(blob_header, begin);
+    const char* data = BinBlob::get(blob_header, begin);
     size_t size = end - begin;
     return StringData(data, size);
 }
@@ -250,7 +250,7 @@ MemRef ArrayStringLong::create_array(size_t size, Allocator& alloc, bool nullabl
     }
     {
         size_t blobs_size = 0;
-        MemRef mem = ArrayBlob::create_array(blobs_size, alloc); // Throws
+        MemRef mem = BinBlob::create_array(blobs_size, alloc); // Throws
         dg_2.reset(mem.get_ref());
         int64_t v(from_ref(mem.get_ref()));
         top.add(v); // Throws

@@ -20,9 +20,9 @@
 #define REALM_ARRAY_BINARY_HPP
 
 #include <realm/binary_data.hpp>
-#include <realm/array_blob.hpp>
 #include <realm/array_integer.hpp>
 #include <realm/exceptions.hpp>
+#include "bin_blob.hpp"
 
 namespace realm {
 
@@ -121,7 +121,7 @@ public:
 
 private:
     ArrayInteger m_offsets;
-    ArrayBlob m_blob;
+    BinBlob m_blob;
     ArrayInteger m_nulls;
 };
 

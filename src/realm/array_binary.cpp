@@ -19,8 +19,8 @@
 #include <utility> // pair
 
 #include <realm/array_binary.hpp>
-#include <realm/array_blob.hpp>
 #include <realm/array_integer.hpp>
+#include <realm/bin_blob.hpp>
 #include <realm/impl/destroy_guard.hpp>
 
 using namespace realm;
@@ -168,7 +168,7 @@ BinaryData ArrayBinary::get(const char* header, size_t ndx, Allocator& alloc) no
         begin = 0;
         end = to_size_t(Array::get(offsets_header, ndx));
     }
-    BinaryData bd = BinaryData(ArrayBlob::get(blob_header, begin), end - begin);
+    BinaryData bd = BinaryData(BinBlob::get(blob_header, begin), end - begin);
     return bd;
 }
 
@@ -223,7 +223,7 @@ MemRef ArrayBinary::create_array(size_t size, Allocator& alloc, BinaryData value
     }
     {
         size_t blobs_size = 0;
-        MemRef mem = ArrayBlob::create_array(blobs_size, alloc); // Throws
+        MemRef mem = BinBlob::create_array(blobs_size, alloc); // Throws
         dg_2.reset(mem.get_ref());
         int64_t v = from_ref(mem.get_ref());
         top.add(v); // Throws
