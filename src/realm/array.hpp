@@ -768,10 +768,6 @@ protected:
     struct VTableForWidth;
 
 protected:
-    /// Takes a 64-bit value and returns the minimum number of bits needed
-    /// to fit the value. For alignment this is rounded up to nearest
-    /// log2. Posssible results {0, 1, 2, 4, 8, 16, 32, 64}
-    static size_t bit_width(int64_t value);
 
 #ifdef REALM_DEBUG
     void report_memory_usage_2(MemUsageHandler&) const;

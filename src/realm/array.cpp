@@ -188,14 +188,15 @@
 using namespace realm;
 using namespace realm::util;
 
-size_t Array::bit_width(int64_t v)
+namespace realm {
+uint_least8_t bit_width(int64_t v)
 {
     // FIXME: Assuming there is a 64-bit CPU reverse bitscan
     // instruction and it is fast, then this function could be
     // implemented as a table lookup on the result of the scan
 
     if ((uint64_t(v) >> 4) == 0) {
-        static const int8_t bits[] = {0, 1, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
+        static const uint8_t bits[] = {0, 1, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
         return bits[int8_t(v)];
     }
 
@@ -205,6 +206,7 @@ size_t Array::bit_width(int64_t v)
 
     // Then check if bits 15-31 used (32b), 7-31 used (16b), else (8b)
     return uint64_t(v) >> 31 ? 64 : uint64_t(v) >> 15 ? 32 : uint64_t(v) >> 7 ? 16 : 8;
+}
 }
 
 void Array::set_type(Type type)

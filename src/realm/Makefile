@@ -37,6 +37,7 @@ alloc.hpp \
 alloc_slab.hpp \
 array.hpp \
 array_integer.hpp \
+array_simple.hpp \
 array_string.hpp \
 bptree.hpp \
 data_type.hpp \
@@ -145,6 +146,7 @@ array_binary.cpp \
 array_blob.cpp \
 array_blobs_big.cpp \
 array_integer.cpp \
+array_simple.cpp \
 array_string.cpp \
 array_string_long.cpp \
 bptree.cpp \

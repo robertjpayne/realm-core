@@ -438,6 +438,13 @@
 		B6A35EF21DA2944F00C81814 /* database_element.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35EF11DA2944F00C81814 /* database_element.hpp */; };
 		B6A35EF31DA2945800C81814 /* database_element.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35EF11DA2944F00C81814 /* database_element.hpp */; };
 		B6A35EF41DA2945900C81814 /* database_element.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35EF11DA2944F00C81814 /* database_element.hpp */; };
+		B6A35F031DA4F2DC00C81814 /* array_simple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6A35F011DA4F2DC00C81814 /* array_simple.cpp */; };
+		B6A35F041DA4F2DC00C81814 /* array_simple.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35F021DA4F2DC00C81814 /* array_simple.hpp */; };
+		B6A35F051DA4F2FC00C81814 /* array_simple.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35F021DA4F2DC00C81814 /* array_simple.hpp */; };
+		B6A35F061DA4F2FD00C81814 /* array_simple.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35F021DA4F2DC00C81814 /* array_simple.hpp */; };
+		B6A35F071DA4F30000C81814 /* array_simple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6A35F011DA4F2DC00C81814 /* array_simple.cpp */; };
+		B6A35F081DA4F30200C81814 /* array_simple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6A35F011DA4F2DC00C81814 /* array_simple.cpp */; };
+		B6A35F0A1DA4F39600C81814 /* array_direct.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6A35F091DA4F39600C81814 /* array_direct.hpp */; };
 		B6F92D3C1D46122700887B4E /* test_util_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F92D3A1D4611D900887B4E /* test_util_file.cpp */; };
 		B6F92D3D1D46122C00887B4E /* test_util_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F92D3A1D4611D900887B4E /* test_util_file.cpp */; };
 		C008FF321B67F02F0042669E /* alloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52F6359316B43C79006117C4 /* alloc.cpp */; };
@@ -1018,6 +1025,9 @@
 		B67A2D381D1D5C1F00F0A0E7 /* test_util_to_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_util_to_string.cpp; sourceTree = "<group>"; };
 		B6A35EED1DA2940600C81814 /* database_element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = database_element.cpp; path = realm/database_element.cpp; sourceTree = "<group>"; };
 		B6A35EF11DA2944F00C81814 /* database_element.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = database_element.hpp; path = realm/database_element.hpp; sourceTree = "<group>"; };
+		B6A35F011DA4F2DC00C81814 /* array_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = array_simple.cpp; path = realm/array_simple.cpp; sourceTree = "<group>"; };
+		B6A35F021DA4F2DC00C81814 /* array_simple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = array_simple.hpp; path = realm/array_simple.hpp; sourceTree = "<group>"; };
+		B6A35F091DA4F39600C81814 /* array_direct.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = array_direct.hpp; path = realm/array_direct.hpp; sourceTree = "<group>"; };
 		B6F92D3A1D4611D900887B4E /* test_util_file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_util_file.cpp; sourceTree = "<group>"; };
 		C008FF991B67F02F0042669E /* liblibrealm watchos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "liblibrealm watchos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C08FE2B61B45BD750037AFCE /* simulated_failure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simulated_failure.cpp; sourceTree = "<group>"; };
@@ -1171,6 +1181,9 @@
 		3647DEEA14209C1200D56FD7 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B6A35F091DA4F39600C81814 /* array_direct.hpp */,
+				B6A35F011DA4F2DC00C81814 /* array_simple.cpp */,
+				B6A35F021DA4F2DC00C81814 /* array_simple.hpp */,
 				B6A35EF11DA2944F00C81814 /* database_element.hpp */,
 				B6A35EED1DA2940600C81814 /* database_element.cpp */,
 				3620DF0318B6CA7B003AD498 /* impl */,
@@ -1658,9 +1671,11 @@
 				365CCE4E157CC37D00172BF8 /* column_string.hpp in Headers */,
 				365CCE4C157CC37D00172BF8 /* column_string_enum.hpp in Headers */,
 				365CCE50157CC37D00172BF8 /* column_table.hpp in Headers */,
+				B6A35F0A1DA4F39600C81814 /* array_direct.hpp in Headers */,
 				65033A771C7DD3B80019E9F2 /* column_timestamp.hpp in Headers */,
 				365CCE51157CC37D00172BF8 /* column_tpl.hpp in Headers */,
 				365CCE52157CC37D00172BF8 /* column_type.hpp in Headers */,
+				B6A35F041DA4F2DC00C81814 /* array_simple.hpp in Headers */,
 				5DC597321B854C960020D712 /* column_type_traits.hpp in Headers */,
 				48A048311C7F7A55000FFD12 /* continuous_transactions_history.hpp in Headers */,
 				36A1DC9216C3F3470086A836 /* data_type.hpp in Headers */,
@@ -1745,6 +1760,7 @@
 				4142C95C1623478700B3B902 /* array_binary.hpp in Headers */,
 				4142C95D1623478700B3B902 /* array_blob.hpp in Headers */,
 				36FDACE217D67DF10084E8BB /* array_blobs_big.hpp in Headers */,
+				B6A35F051DA4F2FC00C81814 /* array_simple.hpp in Headers */,
 				65D3F7AA1AA75E7200F27CBD /* array_integer.hpp in Headers */,
 				4142C95F1623478700B3B902 /* array_string.hpp in Headers */,
 				4142C95E1623478700B3B902 /* array_string_long.hpp in Headers */,
@@ -1840,6 +1856,7 @@
 				B6A35EF41DA2945900C81814 /* database_element.hpp in Headers */,
 				C008FF791B67F02F0042669E /* column_table.hpp in Headers */,
 				65033A7B1C7DD3F40019E9F2 /* column_timestamp.hpp in Headers */,
+				B6A35F061DA4F2FD00C81814 /* array_simple.hpp in Headers */,
 				C008FF7A1B67F02F0042669E /* column_tpl.hpp in Headers */,
 				C008FF7B1B67F02F0042669E /* column_type.hpp in Headers */,
 				5DC597341B854CBA0020D712 /* column_type_traits.hpp in Headers */,
@@ -2263,6 +2280,7 @@
 				522EA519192C4D3C002AD3B6 /* unicode.cpp in Sources */,
 				365CCE75157CC37D00172BF8 /* utilities.cpp in Sources */,
 				80ADCCE918A23DD00049D472 /* version.cpp in Sources */,
+				B6A35F031DA4F2DC00C81814 /* array_simple.cpp in Sources */,
 				42F862D319BDE3460053C134 /* views.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2392,6 +2410,7 @@
 				F4D0FC8D1B00F62C0040956A /* realmd.cpp in Sources */,
 				F4D0FC8B1B00F62C0040956A /* replication.cpp in Sources */,
 				B6A35EEF1DA2942E00C81814 /* database_element.cpp in Sources */,
+				B6A35F071DA4F30000C81814 /* array_simple.cpp in Sources */,
 				F4D0FC8C1B00F62C0040956A /* row.cpp in Sources */,
 				C0552C561B45CEA4007FF3AA /* simulated_failure.cpp in Sources */,
 				4142C94C1623478700B3B902 /* spec.cpp in Sources */,
@@ -2483,6 +2502,7 @@
 				C008FF5A1B67F02F0042669E /* realmd.cpp in Sources */,
 				C008FF5B1B67F02F0042669E /* replication.cpp in Sources */,
 				B6A35EF01DA2942F00C81814 /* database_element.cpp in Sources */,
+				B6A35F081DA4F30200C81814 /* array_simple.cpp in Sources */,
 				C008FF5C1B67F02F0042669E /* row.cpp in Sources */,
 				C008FF3B1B67F02F0042669E /* simulated_failure.cpp in Sources */,
 				C008FF5D1B67F02F0042669E /* spec.cpp in Sources */,

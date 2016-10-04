@@ -26,6 +26,7 @@
 #include <map>
 
 #include <realm/array.hpp>
+#include <realm/array_simple.hpp>
 #include <realm/column.hpp>
 #include <realm/query_conditions.hpp>
 
@@ -95,9 +96,9 @@ void has_zero_byte(TestContext& test_context, int64_t value, size_t reps)
 } // anonymous namespace
 
 
-TEST(Array_General)
+TEST_TYPES(Array_General, Array, SimpleArray)
 {
-    Array c(Allocator::get_default());
+    TEST_TYPE c(Allocator::get_default());
     c.create(Array::type_Normal);
 
     // TEST(Array_Add0)
@@ -115,7 +116,6 @@ TEST(Array_General)
     CHECK_EQUAL(c.get(1), 1);
     CHECK_EQUAL(c.size(), 2);
     CHECK_EQUAL(1, c.get_width());
-
 
     // TEST(Array_Add2)
 
@@ -313,19 +313,32 @@ TEST(Array_General)
     CHECK_EQUAL(c.get(5), 3);
     CHECK_EQUAL(c.get(6), 65536);
 
+    // Insert in middle when width > 8
+    c.insert(4, 47);
+
+    CHECK_EQUAL(c.size(), 8);
+    CHECK_EQUAL(c.get(0), 256);
+    CHECK_EQUAL(c.get(1), 0);
+    CHECK_EQUAL(c.get(2), 1);
+    CHECK_EQUAL(c.get(3), 16);
+    CHECK_EQUAL(c.get(4), 47);
+    CHECK_EQUAL(c.get(5), 2);
+    CHECK_EQUAL(c.get(6), 3);
+    CHECK_EQUAL(c.get(7), 65536);
 
     // TEST(Array_Delete1)
 
     // Delete from middle
     c.erase(3);
 
-    CHECK_EQUAL(c.size(), 6);
+    CHECK_EQUAL(c.size(), 7);
     CHECK_EQUAL(c.get(0), 256);
     CHECK_EQUAL(c.get(1), 0);
     CHECK_EQUAL(c.get(2), 1);
-    CHECK_EQUAL(c.get(3), 2);
-    CHECK_EQUAL(c.get(4), 3);
-    CHECK_EQUAL(c.get(5), 65536);
+    CHECK_EQUAL(c.get(3), 47);
+    CHECK_EQUAL(c.get(4), 2);
+    CHECK_EQUAL(c.get(5), 3);
+    CHECK_EQUAL(c.get(6), 65536);
 
 
     // TEST(Array_Delete2)
@@ -333,24 +346,26 @@ TEST(Array_General)
     // Delete from top
     c.erase(0);
 
-    CHECK_EQUAL(c.size(), 5);
+    CHECK_EQUAL(c.size(), 6);
     CHECK_EQUAL(c.get(0), 0);
     CHECK_EQUAL(c.get(1), 1);
-    CHECK_EQUAL(c.get(2), 2);
-    CHECK_EQUAL(c.get(3), 3);
-    CHECK_EQUAL(c.get(4), 65536);
+    CHECK_EQUAL(c.get(2), 47);
+    CHECK_EQUAL(c.get(3), 2);
+    CHECK_EQUAL(c.get(4), 3);
+    CHECK_EQUAL(c.get(5), 65536);
 
 
     // TEST(Array_Delete3)
 
     // Delete from bottom
-    c.erase(4);
+    c.erase(5);
 
-    CHECK_EQUAL(c.size(), 4);
+    CHECK_EQUAL(c.size(), 5);
     CHECK_EQUAL(c.get(0), 0);
     CHECK_EQUAL(c.get(1), 1);
-    CHECK_EQUAL(c.get(2), 2);
-    CHECK_EQUAL(c.get(3), 3);
+    CHECK_EQUAL(c.get(2), 47);
+    CHECK_EQUAL(c.get(3), 2);
+    CHECK_EQUAL(c.get(4), 3);
 
 
     // TEST(Array_DeleteAll)
@@ -360,10 +375,18 @@ TEST(Array_General)
     c.erase(0);
     c.erase(0);
     c.erase(0);
+    c.erase(0);
 
     CHECK(c.is_empty());
     CHECK_EQUAL(0, c.size());
 
+    c.destroy();
+}
+
+TEST(Array_GeneralFind)
+{
+    Array c(Allocator::get_default());
+    c.create(Array::type_Normal);
 
     // TEST(Array_Find1)
 
