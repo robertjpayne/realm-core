@@ -211,7 +211,7 @@ void LinkListColumn::cascade_break_backlinks_to(size_t row_ndx, CascadeState& st
     ref_type ref = get_as_ref(row_ndx);
     if (ref == 0)
         return;
-    Array root(get_alloc());
+    BpTreeNode root(get_alloc());
     root.init_from_ref(ref);
 
     if (!root.is_inner_bptree_node()) {
@@ -267,7 +267,7 @@ void LinkListColumn::cascade_break_backlinks_to_all_rows(size_t num_rows, Cascad
 
     // Avoid the construction of both a LinkView and a IntegerColumn instance,
     // since both would involve heap allocations.
-    Array root(get_alloc()), leaf(get_alloc());
+    BpTreeNode root(get_alloc()), leaf(get_alloc());
     for (size_t i = 0; i < num_rows; ++i) {
         ref_type ref = get_as_ref(i);
         if (ref == 0)
@@ -461,7 +461,7 @@ void LinkListColumn::adj_acc_swap_rows(size_t row_ndx_1, size_t row_ndx_2) noexc
 }
 
 
-void LinkListColumn::adj_acc_subsume_row(size_t old_row_ndx, size_t new_row_ndx) noexcept
+void LinkListColumn::adj_acc_merge_rows(size_t old_row_ndx, size_t new_row_ndx) noexcept
 {
     prune_list_accessor_tombstones();
 

@@ -16,7 +16,39 @@
 
 ### Internals
 
+* Lorem ipsum.
+
+----------------------------------------------
+
+# 2.1.1 Release notes
+
+### Internals
+
+* Upgraded to OpenSSL 1.0.2j.
+
+----------------------------------------------
+
+# 2.1.0 Release notes
+
+### Bugfixes
+
+* Fix an assertion failure when upgrading indexed nullable int columns to the
+  new index format.
+* Extra SetUnique instructions are no longer generated in the transaction log
+  when a conflict was resolved locally.
+
+### Breaking changes
+
+* The ChangeLinkTargets instruction was a misnomer and has been renamed to
+  MergeRows.
+
+-----------
+
+### Internals
+
 * Android builds: upgraded to OpenSSL 1.0.1u.
+* The behavior of MergeRows (formerly ChangeLinkTargets) has been simplified to
+  be semantically equivalent to a row swap.
 
 ----------------------------------------------
 

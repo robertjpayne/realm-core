@@ -445,5 +445,4 @@ void BacklinkColumn::get_backlinks(std::vector<VerifyPair>& pairs)
 }
 #endif
 
-
 // LCOV_EXCL_STOP ignore debug functions
