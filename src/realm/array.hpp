@@ -98,13 +98,13 @@ inline T no0(T v)
 /// Special index value. It has various meanings depending on
 /// context. It is returned by some search functions to indicate 'not
 /// found'. It is similar in function to std::string::npos.
-const size_t npos = size_t(-1);
+constexpr size_t npos = size_t(-1);
 
 // Maximum number of bytes that the payload of an array can be
-const size_t max_array_payload = 0x00ffffffL;
+constexpr size_t max_array_payload = 0x00ffffffL;
 
 /// Alias for realm::npos.
-const size_t not_found = npos;
+constexpr size_t not_found = npos;
 
 // Pre-definitions
 class Array;
