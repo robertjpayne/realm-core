@@ -293,20 +293,36 @@ inline bool Allocator::should_propagate_version(uint_fast64_t& local_version) no
 
 // Implementation:
 
-inline int_fast64_t from_ref(ref_type v) noexcept
+
+inline int_fast64_t from_ref(ref_type ref) noexcept
 {
-    // Check that v is divisible by 8 (64-bit aligned).
-    REALM_ASSERT_DEBUG(v % 8 == 0);
-    return util::from_twos_compl<int_fast64_t>(v);
+    // Check that ref is divisible by 8 (64-bit aligned).
+    REALM_ASSERT_DEBUG(ref % 8 == 0);
+
+    // Convert to signed 64 bit representation, preserving the bit pattern of the ref and possibly
+    // sign extending (for refs with MSB set). The reason for doing this is to store refs in arrays
+    // as compact as possible. E.g. on 32-bit platforms storing an unsigned 32-bit value with the MSB set
+    // would otherwise unnecessarily expand the array to 64-bits.
+    using signed_ref_type = std::make_signed<ref_type>::type;
+    static_assert(sizeof(ref_type) == sizeof(signed_ref_type), "foobar");
+    signed_ref_type signed_ref = util::from_twos_compl<signed_ref_type>(ref);
+    return int_fast64_t(signed_ref);
 }
+
 
 inline ref_type to_ref(int_fast64_t v) noexcept
 {
-    REALM_ASSERT_DEBUG(!util::int_cast_has_overflow<ref_type>(v));
-    // Check that v is divisible by 8 (64-bit aligned).
-    REALM_ASSERT_DEBUG(v % 8 == 0);
-    return ref_type(v);
+    // Check that the value is inside the valid range of a ref
+    using signed_ref_type = std::make_signed<ref_type>::type;
+    REALM_ASSERT_DEBUG(!util::int_cast_has_overflow<signed_ref_type>(v));
+
+    ref_type ref = ref_type(v); // signed -> unsigned conversion well-defined for two's complement representations
+
+    // Check that ref is divisible by 8 (64-bit aligned).
+    REALM_ASSERT_DEBUG(ref % 8 == 0);
+    return ref;
 }
+
 
 inline int64_t to_int64(size_t value) noexcept
 {

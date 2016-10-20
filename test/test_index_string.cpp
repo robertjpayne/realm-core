@@ -973,8 +973,22 @@ StringData create_string_with_nuls(const size_t bits, const size_t length, char*
 
 
 // Test for generated strings of length 1..16 with all combinations of embedded NUL bytes
-TEST_TYPES(StringIndex_EmbeddedZeroesCombinations, non_nullable, nullable)
+ONLY_TYPES(StringIndex_EmbeddedZeroesCombinations, non_nullable, nullable)
 {
+    constexpr size_t ref_type_width = sizeof(ref_type) * 8;
+    constexpr ref_type interesting_refs[] = {0, 8, ref_type(-8), ref_type(1ULL << (ref_type_width - 1)),
+                                             ref_type(3ULL << (ref_type_width - 2))};
+
+    constexpr size_t num_interesting_refs = sizeof(interesting_refs) / sizeof(interesting_refs[0]);
+    for (size_t i = 0; i < num_interesting_refs; ++i) {
+        ref_type ref = interesting_refs[i];
+        int_fast64_t ref_as_int = from_ref(ref);
+        ref_type back_to_ref = to_ref(ref_as_int);
+        CHECK_EQUAL(ref, back_to_ref);
+    }
+    return;
+
+
     constexpr bool nullable = TEST_TYPE::value;
     constexpr unsigned int seed = 42;
 
